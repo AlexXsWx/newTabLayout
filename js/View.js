@@ -9,12 +9,27 @@ define(["utils", "Manipulator", "layoutLogic"], function(utils, Manipulator, lay
 		this.element = createElement("div.view");
 
 		var content = createElement("div.content");
-		var lbManipulator = new Manipulator(true, false, view);
-		var rtManipulator = new Manipulator(false, true, view);
 
-		this.element.appendChild(content);
-		this.element.appendChild(lbManipulator.element);
-		this.element.appendChild(rtManipulator.element);
+		function init() {
+
+			view.element.appendChild(content);
+
+			view.element.appendChild(
+				new Manipulator(
+					Manipulator.RIGHT | Manipulator.TOP, view
+				).element
+			);
+			view.element.appendChild(
+				new Manipulator(
+					Manipulator.LEFT | Manipulator.BOTTOM, view
+				).element
+			);
+
+			type && view.setType(type);
+
+			content.innerHTML = counter++;
+
+		}
 
 		this.container = function() {
 			return view.element.parentNode;
@@ -28,9 +43,7 @@ define(["utils", "Manipulator", "layoutLogic"], function(utils, Manipulator, lay
 			updateLayout(this.element.parentNode);
 		};
 
-		type && this.setType(type);
-
-		content.innerHTML = counter++;
+		init();
 
 	}
 
