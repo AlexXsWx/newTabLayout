@@ -1,25 +1,64 @@
 <!DOCTYPE html>
 
-<html lang="en">
+<html lang = "en">
 
 	<head>
 
-		<meta charset="utf-8">
+		<meta charset = "utf-8">
 		
 		<title>New Tab</title>
 
-		<style type="text/css">
+		<style type = "text/css">
 			html, body {
 				height: 100%;
 				margin: 0;
 			}
 		</style>
 
-		<link rel="stylesheet" href="css/style.css">
-		<script data-main="js/main" src="js/lib/require.js"></script>
+		<link rel = "stylesheet" href = "css/style.css">
+		<script data-main = "js/main" src = "js/lib/require.js"></script>
 
 	</head>
 
-	<body></body>
+	<body>
+
+		<!--
+			fixed*
+			content*
+			relative*
+			auto*
+		  -->
+		
+		<!-- <div class = "container root">
+			<div class = "view fixedWidth debugHeight" width = "50" height = "50">
+				I'm 50x50px sized
+			</div>
+		</div> -->
+
+		<div class = "container root">
+			<div class = "view fixedWidth debugHeight" style = "width: 2000px; height: 2000px">
+				I'm oversized
+			</div>
+		</div>
+
+		<!-- <div class = "container root">
+			<div class = "view contentWidth debugHeight">
+				I'm sized by content
+			</div>
+		</div>
+
+		<div class = "container root">
+			<div class = "view relativeWidth debugHeight" rWidth = "20%">
+				I'm my size is automatic
+			</div>
+		</div>
+
+		<div class = "container root">
+			<div class = "view autoWidth debugHeight">
+				I'm my size is automatic
+			</div>
+		</div> -->
+
+	</body>
 
 </html>

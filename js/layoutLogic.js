@@ -1,3 +1,6 @@
+var VIEW_MIN_WIDTH  = 40;
+var VIEW_MIN_HEIGHT = 40;
+
 var updateLayout;
 
 require(["class"], function() {
@@ -6,70 +9,117 @@ require(["class"], function() {
 
 		if (!root) return;
 
-		// console.log("%O", root);
+		function proceedContainer(container) {
 
-		var dimension, altDimension;
-		if (hasClass(root, "horizontal")) {
-			dimension = "width";
-			altDimension = "height";
-		} else {
-			dimension = "height";
-			altDimension = "width";
+			console.debug("Proceeding container", container);
+
+			function sumWidth(arr) {
+
+				function getViewMinWidth(view) {
+					var result = 0;
+					if (hasClass(view, "fixedWidth")) {
+						result = view.getAttribute("width") || 0;
+					} else
+					if (hasClass(view, "contentWidth")) {
+						result = view.content.contentWidth;
+					}
+					return Math.max(result, VIEW_MIN_WIDTH);
+				}
+
+				return arr.reduce(function(sum, e) {
+					return sum + getViewMinWidth(e);
+				}, 0);
+
+			}
+
+			var children = (function(container) {
+
+				function filter(arr, className) {
+					return arr.filter(function(e) {
+						return hasClass(e, className);
+					});
+				}
+
+				var all = Array.prototype.filter.call(
+					container.children,
+					function(e) {
+						return hasClass(e, "container") || hasClass(e, "view");
+					}
+				);
+
+				return {
+					all:           all,
+					fixedSized:    filter(all, "fixedWidth"),
+					contentSized:  filter(all, "contentWidth"),
+					relativeSized: filter(all, "relativeWidth"),
+					autoSized:     all.filter(function(e) {
+						return hasClass(e, "autoWidth") || (
+							!hasClass(e, "fixedWidth")   &&
+							!hasClass(e, "contentWidth") &&
+							!hasClass(e, "relativeWidth")
+						);
+					})
+				};
+
+			})(container);
+
+			console.debug("Its children are", children);
+
+			
+
+			var containerWidth = container.offsetWidth;
+
+			var availableWidth = containerWidth - 
+				sumWidth(children.fixedSized) -
+				sumWidth(children.contentSized);
+
+			var totalRealtiveWidth = children.relativeSized.reduce(
+				function(sum, e) {
+					return sum + Number(
+						(e.getAttribute("width") || "0").replace("%", "")
+					);
+				}, 0
+			);
+
+			var totalAutoRelativeWidth = Math.max(0,
+				100 - totalRealtiveWidth
+			);
+
+			var widthLeftForAutoSized = Math.max(0,
+				containerWidth -
+				availableWidth -
+				containerWidth * (totalRealtiveWidth / 100.0)
+			);
+
+			Array.prototype.forEach.call(
+				container.querySelectorAll(".container"),
+				proceedContainer
+			);
+
+			Array.prototype.forEach.call(
+				container.querySelectorAll(".view"),
+				proceedView
+			);
+
 		}
 
-		var dimension2 = dimension[0].toUpperCase() + dimension.substr(1);
+		function proceedView(view) {
+			console.debug("Proceeding view", view);
+			// var a = view.getAttribute("width");
+			// if (a !== null) {
+			// 	if (hasClass(view, "fixedWidth")) {
+			// 		view.style.width = a + "px";
+			// 	} else
+			// 	if (hasClass(view, "relativeWidth")) {
+			// 		view.style.width = number;
+			// 	} else
+			// 	if (hasClass(view, "autoWidth")) {
 
-		var children = (function() {
-			var result = {};
-			result.all  = Array.apply(0, root.children);
-			result.max  = result.all.filter(function(e) { return hasClass(e, "maxSize");      });
-			result.rel  = result.all.filter(function(e) { return hasClass(e, "relativeSize"); });
-			result.auto = [].concat(result.max, result.rel);
-			return result;
-		})();
+			// 	}
+			// }
+		}
 
-		console.log(children);
-
-		// minify all elements with non-fixed width
-		children.auto.forEach(function(e) {
-			e.style.removeProperty("width");
-			e.style.removeProperty("height");
-			addClass(e, "minSize");
-		});
-
-		var availableSize = root["offset" + dimension2];
-
-		var sizeToSpend = Math.max(0, availableSize - children.all.filter(function(e) {
-			return hasClass(e, "fixedSize") || hasClass(e, "contentSize");
-		}).reduce(function(a, b) {
-			return a + b["offset" + dimension2];
-		}, 0));
-
-		console.log(availableSize, sizeToSpend);
-
-		var relTotalValue = children.rel.reduce(function(a, b) {
-			return a + (b.relativeSizeValue || 0);
-		}, 0);
-
-		var sizeForMax = Math.max(0, sizeToSpend * (1 - relTotalValue));
-
-		children.rel.forEach(function(e) {
-			removeClass(e, "minSize");
-			// e.style.removeProperty(altDimension);
-			var value = (e.relativeSizeValue || 0) * sizeToSpend;
-			e.style[dimension] = value + "px"; //100 * value / availableSize + "%";
-		});
-
-		children.max.forEach(function(e) {
-			removeClass(e, "minSize");
-			// e.style.removeProperty(altDimension);
-			var value = sizeForMax / children.max.length;
-			e.style[dimension] = value + "px"; //100 * value / availableSize + "%";
-		});
-
-		root.children && Array.prototype.forEach.call(
-			root.children, function(e) { updateLayout(e); }
-		);
+		proceedContainer(root);
 
 	}
 

@@ -3,138 +3,88 @@
 	height: @h;
 }
 
-.general {
-
-	display: inline-block;
-	vertical-align: top;
-
-	box-sizing: border-box;
-	border: 1px solid black;
-	font-size: medium;
-	line-height: normal;
-
+.debug(@c: #afa) {
+	background-color: @c;
+	// box-sizing: border-box;
+	// border: 1px solid black;
+	// padding: 5px;
 }
 
-
-
-.container {
-	.sized;
-	.general;
-}
-
-.container.horizontal > .finalElement {
-	height: 100%;
-	max-height: 100%;
-}
-
-.container.vertical > .finalElement {
-	width: 100%;
-	max-width: 100%;
-}
-
-.finalElement {
-
-	.general;
-
-	min-width:  40px;
-	min-height: 40px;
-
-	box-sizing: border-box;
-	border: 1px solid black;
-	font-size: medium;
-	line-height: normal;
-	background-color: #ffa;
-
-	.minSize {}
-	.fixedSize {}
-	.relativeSize {}
-	.maxSize {}
-	.contentSize {}
-
-	.prepareRemove {
-		border: 2px solid red;
-	}
-}
-
-.container.horizontal > .fintalElement.minSize { max-width:  40px; }
-.container.vertical   > .fintalElement.minSize { max-height: 40px; }
-
-.container.horizontal > .fintalElement.contentSize { width:  0; }
-.container.vertical   > .fintalElement.contentSize { height: 0; }
-
-
-
-.manipulator {
-	background: #faa;
-	display: inline-block;
-	// resize: both;
-	position: absolute;
-	cursor: crosshair;
-	&.right  { right:  0; }
-	&.left   { left:   0; }
-	&.top    { top:    0; }
-	&.bottom { bottom: 0; }
-
-}
-
-
-// ========
 
 
 .root {
 
+	display: table;
 	.sized;
 
-	margin: 0;
-
-	font-size: 0;
-	line-height: 0;
-
-	background: #afa;
+	& > .container {
+		.sized;
+	}
 
 }
 
+.horizontal > * {
+	display: table-cell;
+	height: 100%;
+}
 
+.vertical > * {
+	display: table;
+	width: 100%;
+}
+
+.container {
+	.debug(#afa);
+	vertical-align: middle;
+	text-align: center;
+}
 
 .view {
 
-	.general;
+	.debug(#ffa);
+	text-align: left;
 
 	min-width:  40px;
 	min-height: 40px;
 
-	background-color: #ffa;
-
 	position: relative;
 
-	.content {
-		position: absolute;
-		left: 0;
-		top:  0;
-	}
-
+	// .content {}
+	
 	.manipulator {
-		visibility: hidden;
-		position: absolute;
+
+		.debug(#aaf);
+
+		display: none;
 		width:  20px;
 		height: 20px;
-	}
-
-	&:hover .manipulator {
-		visibility: visible;
-	}
-
-	.manipulatorsLocker {
-		background: rgba(0, 0, 0, 0.33);
+		
 		position: absolute;
+		// left: 0;
+		// top: 0;
+		&.left   { left:   0; }
+		&.top    { top:    0; }
+		&.right  { right:  0; }
+		&.bottom { bottom: 0; }
+
+		cursor: crosshair;
+
+	}
+
+	.manipulatorsKeeper {
+		position: fixed;
 		left: 0;
-		top: 0;
-		width: 100%;
-		height: 100%;
+		top:  0;
+		.sized;
+		background: rgba(0, 0, 0, 0.33);
 	}
 
-	.prepareRemove {
-		border: 2px solid red;
+	&.prepareRemove {
+		.debug(#faa);
 	}
 
+}
+
+.root:not(.fixed) .view:hover .manipulator {
+	display: inline-block;
 }

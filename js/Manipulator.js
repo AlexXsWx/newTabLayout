@@ -1,7 +1,7 @@
 define([ "utils", "AxisAlignedDirection", "View" ],
 function(utils, AADirection, View) {
 
-	var static = {
+	var staticData = {
 		RIGHT:  1,
 		LEFT:   2,
 		TOP:    4,
@@ -306,8 +306,8 @@ function(utils, AADirection, View) {
 
 	}
 
-	for (var key in static) {
-		Manipulator.prototype[key] = static[key];
+	for (var key in staticData) {
+		Manipulator[key] = staticData[key];
 	}
 
 
